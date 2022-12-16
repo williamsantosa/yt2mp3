@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "yt2mp3"
+version = "0.1.0"
+description = ""
+authors = ["William Santosa <93417386+williamsantosa@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytube = "^12.1.0"
+moviepy = "^1.0.3"
+eyed3 = "^0.9.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
