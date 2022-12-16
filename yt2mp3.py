@@ -7,7 +7,6 @@ from moviepy.editor import *
 from pytube import YouTube
 from pytube.contrib.playlist import Playlist
 
-
 def mp4_to_mp3(mp4, mp3):
   """
   Converts mp4 file to mp3 file
@@ -112,7 +111,7 @@ def main():
   # Check if they want to edit the file
   response = ''
   while response != 'y' and response != 'n':
-    response = input('Would you like to edit your files?: ')
+    response = input('Would you like to edit your files? (Y/N): ')
     response = response.strip()[0].lower()
   
   # Finished file editing
@@ -125,13 +124,13 @@ def main():
     # Ask to edit or not
     response = ''
     while response != 'y' and response != 'n':
-      response = input(f'Would you like to edit {file}?: ')
+      response = input(f'Would you like to edit {file}? (Y/N): ')
       response = response.strip()[0].lower()
     if response != 'y':
       continue
 
     # Edit the file
-    lg.info(f'Editing "{file}..."')
+    lg.info(f'Editing "{file}... (Press enter to skip editing property)"')
     path = os.path.join('./mp3/', file)
     mp3file = eyed3.load(path)
 
