@@ -13,9 +13,25 @@ def mp4_to_mp3(mp4, mp3):
   :param mp4: mp4 path (input)
   :param mp3: mp3 path (output)
   """
-  mp4_without_frames = AudioFileClip(mp4)     
-  mp4_without_frames.write_audiofile(mp3)     
-  mp4_without_frames.close() # function call mp4_to_mp3("my_mp4_path.mp4", "audio.mp3")
+  lg.info(f'Beginning mp4 to mp3 conversion: {mp4} -> {mp3}.')
+  try:
+    mp4_without_frames = AudioFileClip(mp4)     
+    mp4_without_frames.write_audiofile(mp3)     
+    mp4_without_frames.close() # function call mp4_to_mp3("my_mp4_path.mp4", "audio.mp3")
+    lg.info(f'Finished mp4 to mp3 conversion for {mp4} to {mp3} succesfully.')
+  except:
+    lg.info(f'Error occurred. Attempting to download by renaming...')
+    mp4_without_frames.close()
+    count = 0
+    while os.path.exists(f"./mp3/renamed{count}.mp3") or os.path.exists(f"./tmp/renamed{count}.mp4"):
+      count += 1
+    new_mp4 = f"./tmp/renamed{count}.mp4"
+    new_mp3 = f"./mp3/renamed{count}.mp3"
+    os.rename(mp4, new_mp4)
+    mp4_without_frames = AudioFileClip(new_mp4)
+    mp4_without_frames.write_audiofile(new_mp3)
+    mp4_without_frames.close()
+    lg.info(f'Finished download for {new_mp4} to {new_mp3} succesfully. Formerly {mp4}.')
 
 def downloadYouTube(link, outputPath=''):
   """
@@ -23,7 +39,6 @@ def downloadYouTube(link, outputPath=''):
   :param link: link of YouTube playlist/video
   :param outputPath: output path of the video
   """
-
   # Create dictionary of links
   link = link.strip()
   if "https://www.youtube.com/playlist?list=" in link:
