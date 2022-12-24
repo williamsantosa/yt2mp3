@@ -40,6 +40,43 @@ def mp4_to_mp3(mp4, mp3):
     lg.info(f'Finished conversion for {new_mp4} to {new_mp3} succesfully. Formerly {mp4}.')
   return True
 
+def editFile(file):
+  lg.info(f'Editing "{file}"... (Press enter to skip editing property)')
+  path = os.path.join('./mp3/', file)
+  mp3file = eyed3.load(path)
+
+  filename = input('File Name: ')
+  if len(filename) > 0:
+    mp3file.rename(filename)
+
+  title = input('Title: ')
+  if len(title) > 0:
+    mp3file.tag.title = title
+
+  artist = input('Artist: ')
+  if len(artist) > 0:
+    mp3file.tag.artist = artist
+
+  album = input('Album: ')
+  if len(album) > 0:
+    mp3file.tag.album = album
+
+  mp3file.tag.save()
+  lg.info(f'Finished editing "{file}"')
+
+def editFiles(files):
+  for file in files:
+    # Ask to edit or not
+    response = ''
+    while response != 'y' and response != 'n':
+      response = input(f'Would you like to edit {file}? (Y/N): ')
+      response = response.strip()[0].lower()
+    if response != 'y':
+      continue
+
+    # Edit the file
+    editFile(file)
+
 def downloadYouTube(link, outputPath=''):
   """
   Downloads YouTube playlist or video
@@ -66,8 +103,10 @@ def downloadYouTube(link, outputPath=''):
   for download_link in download_list:
     lg.info(f"Beginning download for {download_link}...")
 
+    lg.info(f"Creating YouTube object for {download_link}...")
     try:
       yt = YouTube(download_link)
+      lg.info(f"Created YouTube object for {download_link}...")
     except:
       lg.error(f'Could not create YouTube object with link: {download_link}. Check link and internet connection.')
 
@@ -75,12 +114,13 @@ def downloadYouTube(link, outputPath=''):
     streams = yt.streams.order_by('abr')
     stream = yt.streams.get_by_itag(int(streams[-1].itag))
   
+    lg.info(f"Downloading {download_link}...")
     # Download file
     try:
       stream.download(outputPath)
     except:
       lg.error(f'Error occurred when downloading {download_link}.')
-      return
+      return False
 
     lg.info(f"Finished download for {download_link}.")
 
@@ -95,6 +135,7 @@ positional arguments:
 
 options:
   -h, --help        show this help message and exit
+  -e, --edit        edit prompt for all files in mp3 directory and exit
 """
 )
 
@@ -102,6 +143,9 @@ def main():
   # Check command line
   if len(sys.argv) == 1 or '-h' in sys.argv or '--help' in sys.argv:
     print(help())
+    return
+  elif '-e' in sys.argv or '--edit' in sys.argv:
+    editFiles()
     return
 
   # Create directories
@@ -142,37 +186,7 @@ def main():
   
   # Edit the files
   files = os.listdir('./mp3/')
-  for file in files:
-    # Ask to edit or not
-    response = ''
-    while response != 'y' and response != 'n':
-      response = input(f'Would you like to edit {file}? (Y/N): ')
-      response = response.strip()[0].lower()
-    if response != 'y':
-      continue
-
-    # Edit the file
-    lg.info(f'Editing "{file}... (Press enter to skip editing property)"')
-    path = os.path.join('./mp3/', file)
-    mp3file = eyed3.load(path)
-
-    filename = input('File Name: ')
-    if len(filename) > 0:
-      mp3file.rename(filename)
-
-    title = input('Title: ')
-    if len(title) > 0:
-      mp3file.tag.title = title
-
-    artist = input('Artist: ')
-    if len(artist) > 0:
-      mp3file.tag.artist = artist
-
-    album = input('Album: ')
-    if len(album) > 0:
-      mp3file.tag.album = album
-
-    mp3file.tag.save()
+  editFiles(files)
 
 if __name__=="__main__":
   lg.basicConfig(format='%(levelname)s: %(message)s', level=lg.INFO)
