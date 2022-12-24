@@ -46,7 +46,7 @@ def editFile(file):
   mp3file = eyed3.load(path)
 
   filename = input('File Name: ')
-  if len(filename) > 0:
+  if len(filename) > 0 and file[:file.find('.mp3')] != filename:
     mp3file.rename(filename)
 
   title = input('Title: ')
@@ -102,8 +102,6 @@ def downloadYouTube(link, outputPath=''):
   # Download each link within the download list
   for download_link in download_list:
     lg.info(f"Beginning download for {download_link}...")
-
-    lg.info(f"Creating YouTube object for {download_link}...")
     try:
       yt = YouTube(download_link)
       lg.info(f"Created YouTube object for {download_link}...")
@@ -145,7 +143,8 @@ def main():
     print(help())
     return
   elif '-e' in sys.argv or '--edit' in sys.argv:
-    editFiles()
+    files = os.listdir('./mp3/')
+    editFiles(files)
     return
 
   # Create directories
